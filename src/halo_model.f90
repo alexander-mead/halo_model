@@ -34,24 +34,21 @@ PROGRAM halo_model
   CALL fill_array(log(kmin),log(kmax),k,nk)
   k=exp(k)
 
-  ! Set the scale factor and range (linearly spaced)
-  !na=16
-  !amin=0.2
-  !amax=1.0
-  !CALL fill_array(amin,amax,a,na)
-
   ! Set the number of redshifts and range (linearly spaced) and convert z -> a
   amin=0.1
   amax=1.0
   na=10
   CALL fill_array(amin,amax,a,na)
 
+  ! Allocate arrays for power spectra
   ALLOCATE(pow_li(nk,na),pow_2h(1,1,nk,na),pow_1h(1,1,nk,na),pow_hm(1,1,nk,na))
 
+  ! Calculate halo model
   field=field_dmonly
   nf=1
   CALL calculate_HMx(field,nf,mmin,mmax,k,nk,a,na,pow_li,pow_2h,pow_1h,pow_hm,hmod,cosm,verbose,response=.FALSE.)
 
+  ! Write data file to disk
   base='data/power'
   CALL write_power_a_multiple(k,a,pow_li,pow_2h,pow_1h,pow_hm,nk,na,base,verbose)
 
