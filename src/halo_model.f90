@@ -18,13 +18,13 @@ PROGRAM halo_model
   LOGICAL, PARAMETER :: verbose=.TRUE.
 
   ! Assigns the cosmological model
-  icosmo=-1
+  icosmo=1
   CALL assign_cosmology(icosmo,cosm,verbose)
   CALL init_cosmology(cosm)
   CALL print_cosmology(cosm)
 
   ! Assign the halo model
-  ihm=-1
+  ihm=3
   CALL assign_halomod(ihm,hmod,verbose)
 
   ! Set number of k points and k range (log spaced)
