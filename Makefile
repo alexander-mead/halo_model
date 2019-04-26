@@ -112,17 +112,10 @@ $(LIB_DIR)/libhmx.a: $(OBJ)
 # Clean up
 .PHONY: clean
 clean:
-	rm -f $(BIN_DIR)/HMx
-	rm -f $(BIN_DIR)/HMx_debug
-	rm -f $(BIN_DIR)/HMx_fitting
-	rm -f $(BIN_DIR)/HMx_fitting_debug
+	rm -f $(BIN_DIR)/halo_model
 	rm -f $(LIB_DIR)/libhmx.a
-	rm -f $(LIB_DIR)/HMx_cosmosis_interface.so
 	rm -f $(BUILD_DIR)/*.o
 	rm -f $(BUILD_DIR)/*.mod
 	rm -f $(SRC_DIR)/*.mod
 	rm -f $(DEBUG_BUILD_DIR)/*.o
 	rm -f $(DEBUG_BUILD_DIR)/*.mod
-	test -n "$(LIB_DIR)" && rm -rf $(LIB_DIR)/HMx_cosmosis_interface.so.dSYM/
-	test -n "$(BIN_DIR)" && rm -rf $(BIN_DIR)/HMx.dSYM/
-	test -n "$(BIN_DIR)" && rm -rf $(BIN_DIR)/HMx_debug.dSYM/

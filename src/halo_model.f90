@@ -43,7 +43,7 @@ PROGRAM halo_model
   ! Set the number of redshifts and range (linearly spaced) and convert z -> a
   amin=0.1
   amax=1.0
-  na=9
+  na=10
   CALL fill_array(amin,amax,a,na)
 
   ALLOCATE(pow_li(nk,na),pow_2h(1,1,nk,na),pow_1h(1,1,nk,na),pow_hm(1,1,nk,na))
