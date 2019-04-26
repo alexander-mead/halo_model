@@ -1,6 +1,6 @@
-# Makefile to compile HMx
+# Makefile to compile halo model
 
-# Standard HMx flags
+# Standard flags
 HMX_FFLAGS = \
 	-Warray-bounds \
 	-fmax-errors=4 \
@@ -21,19 +21,10 @@ DEBUG_FLAGS = \
 	-fbacktrace \
 	-Og
 
-ifeq ($(COSMOSIS_SRC_DIR),)
 # No cosmosis
 FC = gfortran
 FFLAGS = $(HMX_FFLAGS) -std=gnu -ffree-line-length-none 
 all: bin lib
-else
-# With cosmosis
-include $(COSMOSIS_SRC_DIR)/config/compilers.mk
-COSMOSIS_FFLAGS := $(FFLAGS)
-USER_LDFLAGS = -lcosmosis_fortran
-FFLAGS = $(HMX_FFLAGS) $(COSMOSIS_FFLAGS)
-all: bin lib cosmosis
-endif
 
 # Source-code directory
 SRC_DIR = src
@@ -49,9 +40,6 @@ LIB_DIR = lib
 
 # Executable directory
 BIN_DIR = bin
-
-# Tests directory
-TEST_DIR = tests
 
 # Objects
 _OBJ = \
@@ -84,16 +72,11 @@ make_dirs = @mkdir -p $(@D)
 
 # Standard rules
 lib: $(LIB_DIR)/libhmx.a
-cosmosis: lib $(LIB_DIR)/HMx_cosmosis_interface.so
-bin: $(BIN_DIR)/HMx
-test: $(TEST_DIR)/test_gas_gas
+bin: $(BIN_DIR)/halo_model
 
 # Debugging rules
 debug: FFLAGS += $(DEBUG_FLAGS)
 debug: $(BIN_DIR)/HMx_debug
-
-# Fitting
-fitting: $(BIN_DIR)/HMx_fitting
 
 # Fitting debugging
 fitting_debug: FFLAGS += $(DEBUG_FLAGS)
@@ -105,7 +88,7 @@ $(BUILD_DIR)/%.o: $(SRC_DIR)/%.f90
 	$(FC) -c -o $@ $< -J$(BUILD_DIR) $(LDFLAGS) $(FFLAGS)
 
 # Rule to make HMx executable
-$(BIN_DIR)/HMx: $(OBJ) $(SRC_DIR)/HMx_driver.f90
+$(BIN_DIR)/halo_model: $(OBJ) $(SRC_DIR)/halo_model.f90
 	@echo "\nBuilding executable.\n"
 	$(make_dirs)
 	$(FC) -o $@ $^ -J$(BUILD_DIR) $(LDFLAGS) $(FFLAGS)
@@ -116,24 +99,8 @@ $(DEBUG_BUILD_DIR)/%.o: $(SRC_DIR)/%.f90
 	$(FC) -c -o $@ $< -J$(DEBUG_BUILD_DIR) $(LDFLAGS) $(FFLAGS)
 
 # Rule to make debugging executable
-$(BIN_DIR)/HMx_debug: $(DEBUG_OBJ) $(SRC_DIR)/HMx_driver.f90
+$(BIN_DIR)/halo_model_debug: $(DEBUG_OBJ) $(SRC_DIR)/halo_model.f90
 	@echo "\nBuilding debugging executable.\n"
-	$(FC) -o $@ $^ -J$(DEBUG_BUILD_DIR) $(LDFLAGS) $(FFLAGS)
-
-# Rules to make test executables
-$(TEST_DIR)/test_gas_gas: $(OBJ) $(TEST_DIR)/test_gas_gas.f90
-	@echo "\nBuilding tests.\n"
-	$(FC) -o $@ $^ -J$(BUILD_DIR) $(LDFLAGS) $(FFLAGS)
-
-# Rules to make fitting executables
-$(BIN_DIR)/HMx_fitting: $(OBJ) $(SRC_DIR)/HMx_fitting.f90
-	@echo "\nBuilding fitting.\n"
-	$(make_dirs)
-	$(FC) -o $@ $^ -J$(BUILD_DIR) $(LDFLAGS) $(FFLAGS)
-
-# Rule to make fitting debugging executable
-$(BIN_DIR)/HMx_fitting_debug: $(DEBUG_OBJ) $(SRC_DIR)/HMx_fitting.f90
-	@echo "\nBuilding fitting debugging executable.\n"
 	$(FC) -o $@ $^ -J$(DEBUG_BUILD_DIR) $(LDFLAGS) $(FFLAGS)
 
 # Rule to make HMx static library
@@ -141,11 +108,6 @@ $(LIB_DIR)/libhmx.a: $(OBJ)
 	@echo "\nBuilding static library.\n"
 	$(make_dirs)
 	$(AR) rc $@ $^
-
-# Rule to make cosmosis interface
-$(LIB_DIR)/HMx_cosmosis_interface.so: $(SRC_DIR)/cosmosis_interface.f90
-	@echo "\nBuilding cosmosis interface.\n"
-	$(FC) $(FFLAGS) -shared -o $@ $^ -L$(LIB_DIR) -lhmx $(LDFLAGS) -lcosmosis -I$(BUILD_DIR) -J$(BUILD_DIR)
 
 # Clean up
 .PHONY: clean
