@@ -1,15 +1,16 @@
 # Makefile to compile halo model
 
 # Standard flags
-HMX_FFLAGS = \
+FFLAGS = \
 	-Warray-bounds \
 	-fmax-errors=4 \
 	-ffpe-trap=invalid,zero,overflow \
 	-fimplicit-none \
 	-O3 \
+	-std=gnu \
+	-ffree-line-length-none \
 	-fdefault-real-8 \
 	-fdefault-double-8 \
-	-fopenmp \
 	-lgfortran \
 	-lm
 
@@ -21,10 +22,8 @@ DEBUG_FLAGS = \
 	-fbacktrace \
 	-Og
 
-# No cosmosis
-FC = gfortran
-FFLAGS = $(HMX_FFLAGS) -std=gnu -ffree-line-length-none 
-all: bin lib
+# Compiler
+FC = gfortran 
 
 # Source-code directory
 SRC_DIR = src
@@ -67,23 +66,20 @@ DEBUG_OBJ = $(addprefix $(DEBUG_BUILD_DIR)/,$(_OBJ))
 make_dirs = @mkdir -p $(@D)
 
 # Standard rules
+all: bin lib
 lib: $(LIB_DIR)/libhmx.a
 bin: $(BIN_DIR)/halo_model
 
 # Debugging rules
 debug: FFLAGS += $(DEBUG_FLAGS)
-debug: $(BIN_DIR)/HMx_debug
-
-# Fitting debugging
-fitting_debug: FFLAGS += $(DEBUG_FLAGS)
-fitting_debug: $(BIN_DIR)/HMx_fitting_debug
+debug: $(BIN_DIR)/halo_model_debug
 
 # Rule to make object files
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.f90
 	$(make_dirs)
 	$(FC) -c -o $@ $< -J$(BUILD_DIR) $(LDFLAGS) $(FFLAGS)
 
-# Rule to make HMx executable
+# Rule to make executable
 $(BIN_DIR)/halo_model: $(OBJ) $(SRC_DIR)/halo_model.f90
 	@echo "\nBuilding executable.\n"
 	$(make_dirs)
@@ -99,7 +95,7 @@ $(BIN_DIR)/halo_model_debug: $(DEBUG_OBJ) $(SRC_DIR)/halo_model.f90
 	@echo "\nBuilding debugging executable.\n"
 	$(FC) -o $@ $^ -J$(DEBUG_BUILD_DIR) $(LDFLAGS) $(FFLAGS)
 
-# Rule to make HMx static library
+# Rule to make static library
 $(LIB_DIR)/libhmx.a: $(OBJ)
 	@echo "\nBuilding static library.\n"
 	$(make_dirs)
