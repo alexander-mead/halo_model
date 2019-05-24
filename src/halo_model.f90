@@ -1,5 +1,6 @@
 PROGRAM halo_model
 
+  USE array_operations
   USE cosmology_functions
   USE HMx
 

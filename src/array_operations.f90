@@ -16,6 +16,41 @@ MODULE array_operations
 !!$     MODULE PROCEDURE progression_log_double
 !!$  END INTERFACE progression_log
 
+  PRIVATE
+
+  PUBLIC :: within_array
+  PUBLIC :: swap_arrays
+  PUBLIC :: add_to_array  
+  PUBLIC :: splay
+  PUBLIC :: write_array_list
+  PUBLIC :: maximum
+  PUBLIC :: sum_double
+  PUBLIC :: repeated_entries
+  PUBLIC :: array_position  
+  PUBLIC :: reverse_array
+  PUBLIC :: remove_array_element
+  PUBLIC :: array_positions
+  PUBLIC :: amputate_array
+  PUBLIC :: unique_index  
+  PUBLIC :: reduce_array
+  PUBLIC :: fill_pixels
+  PUBLIC :: binning
+  PUBLIC :: merge_arrays
+  PUBLIC :: mask
+
+  PUBLIC :: unique_entries
+  PUBLIC :: number_of_appearances
+  PUBLIC :: remove_repeated_array_elements
+  PUBLIC :: remove_repeated_two_array_elements
+
+  PUBLIC :: progression
+  PUBLIC :: progression_double
+  PUBLIC :: progression_log
+  PUBLIC :: progression_log_double
+  
+  PUBLIC :: fill_array
+  PUBLIC :: fill_array_double
+
   INTERFACE add_to_array
      MODULE PROCEDURE add_to_array_2D
      MODULE PROCEDURE add_to_array_3D
@@ -25,6 +60,11 @@ MODULE array_operations
      PROCEDURE splay_2D
      PROCEDURE splay_3D
   END INTERFACE splay
+
+  INTERFACE write_array_list
+     PROCEDURE write_array_list_real
+     PROCEDURE write_array_list_int
+  END INTERFACE write_array_list
 
 CONTAINS
 
@@ -281,31 +321,31 @@ CONTAINS
 
   END SUBROUTINE reduce_array
 
-  SUBROUTINE reduceto(arr1,n)
-
-    ! Reduces the array from whatever size to size 'n'
-    ! TODO: Remove
-    IMPLICIT NONE
-    REAL, ALLOCATABLE, INTENT(INOUT) :: arr1(:)
-    INTEGER, INTENT(IN) :: n
-    REAL, ALLOCATABLE :: hold(:)
-    INTEGER :: i, j
-
-    ALLOCATE(hold(n))
-
-    DO i=1,n
-       j=1+ceiling(real((n-1)*(i-1))/real(n-1))
-       hold(i)=arr1(j)
-    END DO
-
-    DEALLOCATE(arr1)
-    ALLOCATE(arr1(n))
-
-    arr1=hold
-
-    DEALLOCATE(hold)
-
-  END SUBROUTINE reduceto
+!!$  SUBROUTINE reduceto(arr1,n)
+!!$
+!!$    ! Reduces the array from whatever size to size 'n'
+!!$    ! TODO: Remove
+!!$    IMPLICIT NONE
+!!$    REAL, ALLOCATABLE, INTENT(INOUT) :: arr1(:)
+!!$    INTEGER, INTENT(IN) :: n
+!!$    REAL, ALLOCATABLE :: hold(:)
+!!$    INTEGER :: i, j
+!!$
+!!$    ALLOCATE(hold(n))
+!!$
+!!$    DO i=1,n
+!!$       j=1+ceiling(real((n-1)*(i-1))/real(n-1))
+!!$       hold(i)=arr1(j)
+!!$    END DO
+!!$
+!!$    DEALLOCATE(arr1)
+!!$    ALLOCATE(arr1(n))
+!!$
+!!$    arr1=hold
+!!$
+!!$    DEALLOCATE(hold)
+!!$
+!!$  END SUBROUTINE reduceto
 
   SUBROUTINE reverse_array(arry,n)
 
@@ -408,7 +448,7 @@ CONTAINS
     
   END SUBROUTINE remove_repeated_two_array_elements
 
-  SUBROUTINE write_array_list(a,n)
+  SUBROUTINE write_array_list_real(a,n)
 
     IMPLICIT NONE
     REAL, INTENT(IN) :: a(n)
@@ -422,7 +462,23 @@ CONTAINS
     WRITE(*,*) 'WRITE_ARRAY_LIST: Done'
     WRITE(*,*)
 
-  END SUBROUTINE write_array_list
+  END SUBROUTINE write_array_list_real
+
+  SUBROUTINE write_array_list_int(a,n)
+
+    IMPLICIT NONE
+    INTEGER, INTENT(IN) :: a(n)
+    INTEGER, INTENT(IN) :: n
+    INTEGER :: i
+
+    WRITE(*,*) 'WRITE_ARRAY_LIST: Writing array'
+    DO i=1,n
+       WRITE(*,*) 'WRITE_ARRAY_LIST:', i, a(i)
+    END DO
+    WRITE(*,*) 'WRITE_ARRAY_LIST: Done'
+    WRITE(*,*)
+
+  END SUBROUTINE write_array_list_int
 
   FUNCTION splay_2D(a,n1,n2)
 
@@ -565,13 +621,15 @@ CONTAINS
 
   SUBROUTINE fill_array(min,max,arr,n)
 
-    ! Fills array 'arr' in equally spaced intervals
-    ! TODO: I'm not sure if inputting an array like this is okay
+    ! Fills array 'arr' in linearly spaced intervals
+    ! e.g., 4 values between 0 and 1 would be 0, 1/3, 2/3, and 1
+    ! This means that min and max are included in the array
     IMPLICIT NONE
+    REAL, INTENT(IN) :: min ! Minimum value for array
+    REAL, INTENT(IN) :: max ! Maximum value for array
+    REAL, ALLOCATABLE, INTENT(OUT) :: arr(:) ! Output array
+    INTEGER, INTENT(IN) :: n ! Number of entries in array
     INTEGER :: i
-    REAL, INTENT(IN) :: min, max
-    REAL, ALLOCATABLE, INTENT(OUT) :: arr(:)
-    INTEGER, INTENT(IN) :: n
 
     ! Allocate the array, and deallocate it if it is full
     IF(ALLOCATED(arr)) DEALLOCATE(arr)
@@ -588,15 +646,35 @@ CONTAINS
 
   END SUBROUTINE fill_array
 
+  SUBROUTINE fill_pixels(min,max,arr,n)
+
+    ! Fill an array between min and max as if the values should correspond to central pixel values
+    ! e.g., 3 pixel values between 0 and 1 would be 1/6, 1/2 and 5/6
+    ! This means that min and max are not included in the array
+    IMPLICIT NONE
+    REAL, INTENT(IN) :: min ! Minimum value bordering array
+    REAL, INTENT(IN) :: max ! Maximum value bordering array
+    REAL, ALLOCATABLE, INTENT(OUT) :: arr(:) ! Output array
+    INTEGER, INTENT(IN) :: n ! Number of pixels in array
+    REAL :: mmin, mmax, pixel_size
+
+    pixel_size=(max-min)/real(n) ! Calculate the pixel size
+    mmin=min+pixel_size/2. ! Offset minimum value by half a pixel into the region
+    mmax=max-pixel_size/2. ! Offset maximum value by half a pixel into the region
+
+    CALL fill_array(mmin,mmax,arr,n) ! Linearly fill array
+    
+  END SUBROUTINE fill_pixels
+
   SUBROUTINE fill_array_double(min,max,arr,n)
 
     ! Fills array 'arr' in equally spaced intervals
     ! TODO: Not sure if inputting an array like this is okay
-    IMPLICIT NONE
-    INTEGER :: i
+    IMPLICIT NONE   
     DOUBLE PRECISION, INTENT(IN) :: min, max
     DOUBLE PRECISION, ALLOCATABLE, INTENT(INOUT) :: arr(:)
     INTEGER, INTENT(IN) :: n
+    INTEGER :: i
 
     ! Allocate the array, and deallocate it if it is full
     IF(ALLOCATED(arr)) DEALLOCATE(arr)
@@ -657,13 +735,12 @@ CONTAINS
     
   END FUNCTION progression_log_double
 
-  FUNCTION maximum(x,y,n)
+  REAL FUNCTION maximum(x,y,n)
 
     USE fix_polynomial
     
     ! From an array y(x) finds the x location of the first maximum
     IMPLICIT NONE
-    REAL :: maximum
     REAL, INTENT(IN) :: x(n), y(n)
     INTEGER, INTENT(IN) :: n
     REAL :: x1, x2, x3, y1, y2, y3, a, b, c
@@ -787,11 +864,11 @@ CONTAINS
   SUBROUTINE unique_index(array,n,unique,m,match)
 
     IMPLICIT NONE
-    INTEGER, INTENT(IN) :: array(n)
-    INTEGER, INTENT(IN) :: n
-    INTEGER, ALLOCATABLE, INTENT(OUT) :: unique(:)
-    INTEGER, INTENT(OUT) :: m
-    INTEGER, INTENT(OUT) :: match(n)
+    INTEGER, INTENT(IN) :: array(n) ! Array to find the unique indices of
+    INTEGER, INTENT(IN) :: n        ! Number of entries in input array
+    INTEGER, ALLOCATABLE, INTENT(OUT) :: unique(:) ! Output array of unique indices
+    INTEGER, INTENT(OUT) :: m                      ! Number of unique indices
+    INTEGER, INTENT(OUT) :: match(n)               ! Array for matching input and unique arrays
     INTEGER :: i, j, p
     LOGICAL :: increment
     
@@ -813,6 +890,7 @@ CONTAINS
           END IF
        END DO
        IF(increment) p=p+1
+       IF(p==m) EXIT ! Added this in haste
     END DO
 
     ! Now fill the matching array

@@ -67,7 +67,7 @@ make_dirs = @mkdir -p $(@D)
 
 # Standard rules
 all: bin lib
-lib: $(LIB_DIR)/libhmx.a
+lib: $(LIB_DIR)/lib.a
 bin: $(BIN_DIR)/halo_model
 
 # Debugging rules
@@ -96,7 +96,7 @@ $(BIN_DIR)/halo_model_debug: $(DEBUG_OBJ) $(SRC_DIR)/halo_model.f90
 	$(FC) -o $@ $^ -J$(DEBUG_BUILD_DIR) $(LDFLAGS) $(FFLAGS)
 
 # Rule to make static library
-$(LIB_DIR)/libhmx.a: $(OBJ)
+$(LIB_DIR)/lib.a: $(OBJ)
 	@echo "\nBuilding static library.\n"
 	$(make_dirs)
 	$(AR) rc $@ $^
