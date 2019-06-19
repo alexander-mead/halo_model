@@ -5,73 +5,81 @@ PROGRAM halo_model
   USE HMx
 
   IMPLICIT NONE
-  REAL :: kmin, kmax, amin, amax
-  REAL, ALLOCATABLE :: k(:), a(:)
-  REAL, ALLOCATABLE :: pow_li(:,:), pow_2h(:,:,:,:), pow_1h(:,:,:,:), pow_hm(:,:,:,:)
-  INTEGER :: icosmo, ihm, field(1), i, j
-  INTEGER :: nk, na, nf
-  CHARACTER(len=256) :: base
-  TYPE(halomod) :: hmod
-  TYPE(cosmology) :: cosm
-  LOGICAL :: verbose2
 
-  REAL, PARAMETER :: mmin=1e7
-  REAL, PARAMETER :: mmax=1e17
-  LOGICAL, PARAMETER :: verbose=.TRUE.
-  LOGICAL, PARAMETER :: response=.FALSE.
-
-  ! Assigns the cosmological model
-  icosmo=1
-  CALL assign_cosmology(icosmo,cosm,verbose)
-  CALL init_cosmology(cosm)
-  CALL print_cosmology(cosm)
-
-  ! Assign the halo model
-  ihm=3
-  CALL assign_halomod(ihm,hmod,verbose)
-  !hmod%ST_p=0.4 ! Example of how to change mass function parameter q
-  !hmod%ST_q=0.8 ! Example of how to change mass function parameter p
-
-  ! Set number of k points and k range (log spaced)
-  nk=128
-  kmin=1e-3
-  kmax=1e2
-  CALL fill_array(log(kmin),log(kmax),k,nk)
-  k=exp(k)
-
-  ! Set the number of scale factors and range (linearly spaced) 
-  amin=0.1
-  amax=1.0
-  na=10
-  CALL fill_array(amin,amax,a,na)
-
-  ! Allocate arrays for power spectra
-  ALLOCATE(pow_li(nk,na),pow_2h(1,1,nk,na),pow_1h(1,1,nk,na),pow_hm(1,1,nk,na))
-
-  ! Calculate halo model
-  field=field_dmonly
-  nf=1
-
-  ! Loop over scale factors and do calculation
-  DO i=1,na
-     
-     IF(i==na) THEN
-        verbose2=verbose
-     ELSE
-        verbose2=.FALSE.
-     END IF
-     
-     CALL init_halomod(mmin,mmax,a(i),hmod,cosm,verbose2)
-     CALL print_halomod(hmod,cosm,verbose2)
-     CALL calculate_HMx_a(field,nf,k,nk,pow_li(:,i),pow_2h(:,:,:,i),pow_1h(:,:,:,i),pow_hm(:,:,:,i),hmod,cosm,verbose2,response)
-     
-  END DO
-
-  ! Write data file to disk
-  base='data/power'
-  CALL write_power_a_multiple(k,a,pow_li,pow_2h,pow_1h,pow_hm,nk,na,base,verbose)
+  CALL example()
 
 CONTAINS
+
+  SUBROUTINE example()
+
+   IMPLICIT NONE
+   REAL :: kmin, kmax, amin, amax
+   REAL, ALLOCATABLE :: k(:), a(:)
+   REAL, ALLOCATABLE :: pow_li(:,:), pow_2h(:,:,:,:), pow_1h(:,:,:,:), pow_hm(:,:,:,:)
+   INTEGER :: icosmo, ihm, field(1), i
+   INTEGER :: nk, na, nf
+   CHARACTER(len=256) :: base
+   TYPE(halomod) :: hmod
+   TYPE(cosmology) :: cosm
+   LOGICAL :: verbose2
+ 
+   REAL, PARAMETER :: mmin=1e7
+   REAL, PARAMETER :: mmax=1e17
+   LOGICAL, PARAMETER :: verbose=.TRUE.
+   LOGICAL, PARAMETER :: response=.FALSE.
+ 
+   ! Assigns the cosmological model
+   icosmo=1
+   CALL assign_cosmology(icosmo,cosm,verbose)
+   CALL init_cosmology(cosm)
+   CALL print_cosmology(cosm)
+ 
+   ! Assign the halo model
+   ihm=3
+   CALL assign_halomod(ihm,hmod,verbose)
+   !hmod%ST_p=0.4 ! Example of how to change mass function parameter q
+   !hmod%ST_q=0.8 ! Example of how to change mass function parameter p
+ 
+   ! Set number of k points and k range (log spaced)
+   nk=128
+   kmin=1e-3
+   kmax=1e2
+   CALL fill_array(log(kmin),log(kmax),k,nk)
+   k=exp(k)
+ 
+   ! Set the number of scale factors and range (linearly spaced) 
+   amin=0.1
+   amax=1.0
+   na=10
+   CALL fill_array(amin,amax,a,na)
+ 
+   ! Allocate arrays for power spectra
+   ALLOCATE(pow_li(nk,na),pow_2h(1,1,nk,na),pow_1h(1,1,nk,na),pow_hm(1,1,nk,na))
+ 
+   ! Calculate halo model
+   field=field_dmonly
+   nf=1
+ 
+   ! Loop over scale factors and do calculation
+   DO i=1,na
+      
+      IF(i==na) THEN
+         verbose2=verbose
+      ELSE
+         verbose2=.FALSE.
+      END IF
+      
+      CALL init_halomod(mmin,mmax,a(i),hmod,cosm,verbose2)
+      CALL print_halomod(hmod,cosm,verbose2)
+      CALL calculate_HMx_a(field,nf,k,nk,pow_li(:,i),pow_2h(:,:,:,i),pow_1h(:,:,:,i),pow_hm(:,:,:,i),hmod,cosm,verbose2,response)
+      
+   END DO
+ 
+   ! Write data file to disk
+   base='data/power'
+   CALL write_power_a_multiple(k,a,pow_li,pow_2h,pow_1h,pow_hm,nk,na,base,verbose)
+
+  END SUBROUTINE
 
   SUBROUTINE write_power_a_multiple(k,a,pow_lin,pow_2h,pow_1h,pow_full,nk,na,base,verbose)
 
