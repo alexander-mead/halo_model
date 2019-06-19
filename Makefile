@@ -31,6 +31,9 @@ SRC_DIR = src
 # Build directory
 BUILD_DIR = build
 
+# Module directory
+MOD_DIR = /Users/Mead/Physics/library/src
+
 # Debug build directory
 DEBUG_BUILD_DIR = debug_build
 
@@ -44,19 +47,20 @@ BIN_DIR = bin
 _OBJ = \
 	constants.o \
 	physics.o \
+	fix_polynomial.o \
+	array_operations.o \
 	logical_operations.o \
 	random_numbers.o \
 	file_info.o \
-	fix_polynomial.o \
-	array_operations.o \
 	table_integer.o \
 	special_functions.o \
 	interpolate.o \
 	solve_equations.o \
 	string_operations.o \
 	calculus_table.o \
+	camb_stuff.o \
 	cosmology_functions.o \
-	HMx.o
+	hmx.o
 
 # Add prefixes of build directory to objects
 OBJ = $(addprefix $(BUILD_DIR)/,$(_OBJ))
@@ -75,7 +79,7 @@ debug: FFLAGS += $(DEBUG_FLAGS)
 debug: $(BIN_DIR)/halo_model_debug
 
 # Rule to make object files
-$(BUILD_DIR)/%.o: $(SRC_DIR)/%.f90
+$(BUILD_DIR)/%.o: $(MOD_DIR)/%.f90
 	$(make_dirs)
 	$(FC) -c -o $@ $< -J$(BUILD_DIR) $(LDFLAGS) $(FFLAGS)
 
@@ -86,7 +90,7 @@ $(BIN_DIR)/halo_model: $(OBJ) $(SRC_DIR)/halo_model.f90
 	$(FC) -o $@ $^ -J$(BUILD_DIR) $(LDFLAGS) $(FFLAGS)
 
 # Rule to make debugging objects
-$(DEBUG_BUILD_DIR)/%.o: $(SRC_DIR)/%.f90
+$(DEBUG_BUILD_DIR)/%.o: $(MOD_DIR)/%.f90
 	$(make_dirs)
 	$(FC) -c -o $@ $< -J$(DEBUG_BUILD_DIR) $(LDFLAGS) $(FFLAGS)
 
