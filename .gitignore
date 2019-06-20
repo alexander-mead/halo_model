@@ -27,8 +27,5 @@ plotting/*.p~
 # Emacs backups
 *~
 
-# Note that /data, /hydro and /diagnostics are dealt with separately
-# Each directory contains a .gitignore
-
-# Library update script
-src/update_library.sh*
+# Fortran language server configuration
+.fortls

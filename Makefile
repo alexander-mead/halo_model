@@ -37,9 +37,6 @@ MOD_DIR = /Users/Mead/Physics/library/src
 # Debug build directory
 DEBUG_BUILD_DIR = debug_build
 
-# Library directory
-LIB_DIR = lib
-
 # Executable directory
 BIN_DIR = bin
 
@@ -66,12 +63,11 @@ _OBJ = \
 OBJ = $(addprefix $(BUILD_DIR)/,$(_OBJ))
 DEBUG_OBJ = $(addprefix $(DEBUG_BUILD_DIR)/,$(_OBJ))
 
-# ?
+# This might make directories, but I am not sure
 make_dirs = @mkdir -p $(@D)
 
 # Standard rules
-all: bin lib
-lib: $(LIB_DIR)/lib.a
+all: bin
 bin: $(BIN_DIR)/halo_model
 
 # Debugging rules
@@ -99,19 +95,11 @@ $(BIN_DIR)/halo_model_debug: $(DEBUG_OBJ) $(SRC_DIR)/halo_model.f90
 	@echo "\nBuilding debugging executable.\n"
 	$(FC) -o $@ $^ -J$(DEBUG_BUILD_DIR) $(LDFLAGS) $(FFLAGS)
 
-# Rule to make static library
-$(LIB_DIR)/lib.a: $(OBJ)
-	@echo "\nBuilding static library.\n"
-	$(make_dirs)
-	$(AR) rc $@ $^
-
 # Clean up
 .PHONY: clean
 clean:
 	rm -f $(BIN_DIR)/halo_model
-	rm -f $(LIB_DIR)/libhmx.a
 	rm -f $(BUILD_DIR)/*.o
 	rm -f $(BUILD_DIR)/*.mod
-	rm -f $(SRC_DIR)/*.mod
 	rm -f $(DEBUG_BUILD_DIR)/*.o
 	rm -f $(DEBUG_BUILD_DIR)/*.mod
