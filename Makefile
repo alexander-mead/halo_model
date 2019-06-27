@@ -25,6 +25,10 @@ DEBUG_FLAGS = \
 # Compiler
 FC = gfortran 
 
+# Binary
+BIN = halo_model
+BIN_DEBUG = $(BIN)_debug
+
 # Source-code directory
 SRC_DIR = src
 
@@ -57,7 +61,7 @@ _OBJ = \
 	calculus_table.o \
 	camb_stuff.o \
 	cosmology_functions.o \
-	hmx.o
+	hmx.o 
 
 # Add prefixes of build directory to objects
 OBJ = $(addprefix $(BUILD_DIR)/,$(_OBJ))
@@ -68,11 +72,11 @@ make_dirs = @mkdir -p $(@D)
 
 # Standard rules
 all: bin
-bin: $(BIN_DIR)/halo_model
+bin: $(BIN_DIR)/$(BIN)
 
 # Debugging rules
 debug: FFLAGS += $(DEBUG_FLAGS)
-debug: $(BIN_DIR)/halo_model_debug
+debug: $(BIN_DIR)/$(BIN_DEBUG)
 
 # Rule to make object files
 $(BUILD_DIR)/%.o: $(MOD_DIR)/%.f90
@@ -80,7 +84,7 @@ $(BUILD_DIR)/%.o: $(MOD_DIR)/%.f90
 	$(FC) -c -o $@ $< -J$(BUILD_DIR) $(LDFLAGS) $(FFLAGS)
 
 # Rule to make executable
-$(BIN_DIR)/halo_model: $(OBJ) $(SRC_DIR)/halo_model.f90
+$(BIN_DIR)/$(BIN): $(OBJ) $(SRC_DIR)/$(BIN).f90
 	@echo "\nBuilding executable.\n"
 	$(make_dirs)
 	$(FC) -o $@ $^ -J$(BUILD_DIR) $(LDFLAGS) $(FFLAGS)
@@ -91,14 +95,15 @@ $(DEBUG_BUILD_DIR)/%.o: $(MOD_DIR)/%.f90
 	$(FC) -c -o $@ $< -J$(DEBUG_BUILD_DIR) $(LDFLAGS) $(FFLAGS)
 
 # Rule to make debugging executable
-$(BIN_DIR)/halo_model_debug: $(DEBUG_OBJ) $(SRC_DIR)/halo_model.f90
+$(BIN_DIR)/$(BIN_DEBUG): $(DEBUG_OBJ) $(SRC_DIR)/$(BIN).f90
 	@echo "\nBuilding debugging executable.\n"
 	$(FC) -o $@ $^ -J$(DEBUG_BUILD_DIR) $(LDFLAGS) $(FFLAGS)
 
 # Clean up
 .PHONY: clean
 clean:
-	rm -f $(BIN_DIR)/halo_model
+	rm -f $(BIN_DIR)/$(BIN)
+	rm -f $(BIN_DIR)/$(BIN_DEBUG)
 	rm -f $(BUILD_DIR)/*.o
 	rm -f $(BUILD_DIR)/*.mod
 	rm -f $(DEBUG_BUILD_DIR)/*.o
