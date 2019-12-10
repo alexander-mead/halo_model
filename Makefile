@@ -2,7 +2,7 @@
 
 # Standard flags
 FFLAGS = \
-	-Warray-bounds \
+	-fcheck=all \
 	-fmax-errors=4 \
 	-ffpe-trap=invalid,zero,overflow \
 	-fimplicit-none \
