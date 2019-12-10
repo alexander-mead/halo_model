@@ -23,8 +23,6 @@ CONTAINS
    TYPE(cosmology) :: cosm
    LOGICAL :: verbose2
  
-   REAL, PARAMETER :: mmin=1e7
-   REAL, PARAMETER :: mmax=1e17
    LOGICAL, PARAMETER :: verbose=.TRUE.
    LOGICAL, PARAMETER :: response=.FALSE.
  
@@ -37,8 +35,6 @@ CONTAINS
    ! Assign the halo model
    ihm=3
    CALL assign_halomod(ihm,hmod,verbose)
-   !hmod%ST_p=0.4 ! Example of how to change mass function parameter q
-   !hmod%ST_q=0.8 ! Example of how to change mass function parameter p
  
    ! Set number of k points and k range (log spaced)
    nk=128
@@ -63,13 +59,15 @@ CONTAINS
    ! Loop over scale factors and do calculation
    DO i=1,na
       
+      ! Stop the calculation being too verbose
       IF(i==na) THEN
          verbose2=verbose
       ELSE
          verbose2=.FALSE.
       END IF
       
-      CALL init_halomod(mmin,mmax,a(i),hmod,cosm,verbose2)
+      ! Do the halo model calculation
+      CALL init_halomod(a(i),hmod,cosm,verbose2)
       CALL print_halomod(hmod,cosm,verbose2)
       CALL calculate_HMx_a(field,nf,k,nk,pow_li(:,i),pow_2h(:,:,:,i),pow_1h(:,:,:,i),pow_hm(:,:,:,i),hmod,cosm,verbose2,response)
       
