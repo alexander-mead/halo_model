@@ -36,7 +36,7 @@ SRC_DIR = src
 BUILD_DIR = build
 
 # Module directory
-MOD_DIR = /Users/Mead/Physics/library/src
+MOD_DIR = library/src
 
 # Debug build directory
 DEBUG_BUILD_DIR = debug_build
@@ -46,11 +46,11 @@ BIN_DIR = bin
 
 # Objects
 _OBJ = \
+	precision.o \
 	constants.o \
 	physics.o \
-	fix_polynomial.o \
+	basic_operations.o \
 	array_operations.o \
-	logical_operations.o \
 	random_numbers.o \
 	file_info.o \
 	table_integer.o \
@@ -60,6 +60,10 @@ _OBJ = \
 	string_operations.o \
 	calculus_table.o \
 	camb_stuff.o \
+	sorting.o \
+	statistics.o \
+	calculus.o \
+	minimization.o \
 	cosmology_functions.o \
 	hmx.o 
 
