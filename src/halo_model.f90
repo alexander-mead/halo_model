@@ -50,6 +50,6 @@ CONTAINS
       base = 'data/power'
       CALL write_power_a_multiple(k, a, pow_li, pow_2h, pow_1h, pow_hm, nk, na, base, verbose)
 
-   END SUBROUTINE
+   END SUBROUTINE example
 
 END PROGRAM
