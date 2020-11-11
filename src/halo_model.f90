@@ -12,7 +12,6 @@ CONTAINS
 
    SUBROUTINE example()
 
-      IMPLICIT NONE
       REAL, ALLOCATABLE :: k(:), a(:)
       REAL, ALLOCATABLE :: pow_li(:, :), pow_2h(:, :), pow_1h(:, :), pow_hm(:, :)
       INTEGER :: icosmo, ihm
@@ -23,12 +22,16 @@ CONTAINS
       REAL, PARAMETER :: kmin = 1e-3
       REAL, PARAMETER :: kmax = 1e2
       INTEGER, PARAMETER :: nk = 128
-      REAL, PARAMETER :: amin = 0.1
+      REAL, PARAMETER :: amin = 0.2
       REAL, PARAMETER :: amax = 1.0
-      INTEGER, PARAMETER :: na = 16
-      INTEGER, PARAMETER :: icosmo_default =  1
+      INTEGER, PARAMETER :: na = 9
+      INTEGER, PARAMETER :: icosmo_default = 1
       INTEGER, PARAMETER :: ihm_default = 3
       LOGICAL, PARAMETER :: verbose = .TRUE.
+
+      ! Set number of k points (log spaced) and a range
+      CALL fill_array_log(kmin, kmax, k, nk)
+      CALL fill_array(amin, amax, a, na)
 
       ! Assigns the cosmological model
       icosmo = icosmo_default
@@ -39,10 +42,6 @@ CONTAINS
       ! Assign the halo model
       ihm = ihm_default
       CALL assign_halomod(ihm, hmod, verbose)
-
-      ! Set number of k points and k range (log spaced)
-      CALL fill_array_log(kmin, kmax, k, nk)
-      CALL fill_array(amin, amax, a, na)
 
       ! Do the halo model calculation
       CALL calculate_halomod_full(k, a, pow_li, pow_2h, pow_1h, pow_hm, nk, na, cosm, ihm)

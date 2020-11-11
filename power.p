@@ -9,5 +9,5 @@ set format y '10^{%T}'
 
 unset colorbox
 
-n=10
+n=9
 plot for [i=1:n] 'data/power_hm.dat' u 1:(column(1+i)):(-real(i-1)/real(n-1)) w l lw 3 lc palette noti
