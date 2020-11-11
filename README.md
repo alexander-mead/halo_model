@@ -6,7 +6,7 @@ To clone this repositoy
 ```
 git clone --recursive https://github.com/alexander-mead/halo_model
 ```
-the `--recursive` is important in order to automatically clone the required library too.
+the `--recursive` is important in order to simultaneously clone the required library.
 
 To compile requires a Fortran compiler and one needs to simply run the `Makefile` by typing `>make` in the terminal. The `Makefile` is configured to use `gfortran`, but you can change this and it should work with other compilers, although you may need to change some of the compile flags.
 
