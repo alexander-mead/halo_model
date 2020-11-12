@@ -52,4 +52,4 @@ CONTAINS
 
    END SUBROUTINE example
 
-END PROGRAM
+END PROGRAM halo_model
