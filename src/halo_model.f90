@@ -39,11 +39,8 @@ CONTAINS
       CALL init_cosmology(cosm)
       CALL print_cosmology(cosm)
 
-      ! Assign the halo model
-      ihm = ihm_default
-      CALL assign_halomod(ihm, hmod, verbose)
-
       ! Do the halo model calculation
+      ihm = ihm_default
       CALL calculate_halomod_full(k, a, pow_li, pow_2h, pow_1h, pow_hm, nk, na, cosm, ihm)
 
       ! Write data file to disk
