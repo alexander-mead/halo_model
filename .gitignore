@@ -28,4 +28,4 @@ plotting/*.p~
 *~
 
 # Fortran language server configuration
-.fortls
+.vscode

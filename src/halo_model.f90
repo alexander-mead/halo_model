@@ -16,7 +16,6 @@ CONTAINS
       REAL, ALLOCATABLE :: pow_li(:, :), pow_2h(:, :), pow_1h(:, :), pow_hm(:, :)
       INTEGER :: icosmo, ihm
       CHARACTER(len=256) :: base
-      TYPE(halomod) :: hmod
       TYPE(cosmology) :: cosm
 
       REAL, PARAMETER :: kmin = 1e-3
